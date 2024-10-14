@@ -23,7 +23,7 @@ public class Metodos{
         }
         return conn;
     }
-    public void inserirProd(String cod, String desc, int prezo, LocalDate data) {
+    public void inserirProd(String cod, String desc, int prezo, Date data) {
         String command = "INSERT INTO produtos(codigo, descricion,prezo, datac) VALUES(?,?,?,?)";
         try {
             Connection conn = DriverManager.getConnection(url,usuario,password);
@@ -31,7 +31,7 @@ public class Metodos{
             ps.setString(1,cod);
             ps.setString(2,desc);
             ps.setInt(3,prezo);
-            ps.setDate(4,Date.valueOf(data));
+            ps.setDate(4,data);
 
             ps.execute();
 
@@ -62,6 +62,53 @@ public class Metodos{
             e.printStackTrace();
         }
     }
-    public void
+    public void listaProdutoPorCodigo (String codigo){
+        String command = "SELECT * from produtos where codigo = ?";
+        try{
+            Connection conn = DriverManager.getConnection(url, usuario,password);
+            PreparedStatement ps = conn.prepareStatement(command);
+            ps.setString(1,codigo);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next())
+                System.out.println(rs.getString(1) + " " + rs.getString(2) + " " + rs.getInt(3) + " " + rs.getDate(4));
+            else
+                System.out.println("Error");
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void actualizaPre (String codigo, int prezo){
+        String command = "UPDATE produtos SET prezo = ? where codigo = ?";
+        try {
+            Connection conn = DriverManager.getConnection(url,usuario,password);
+            PreparedStatement ps = conn.prepareStatement(command);
+            ps.setInt(1,prezo);
+            ps.setString(2,codigo);
+
+            if(ps.executeUpdate() > 0)
+                System.out.println("Actualizado");
+            else
+                System.out.println("Error");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void eliminaProduto(String codigo){
+        String command = "DELETE FROM produtos where codigo = ?";
+        try{
+            Connection conn = DriverManager.getConnection(url,usuario,password);
+            PreparedStatement ps = conn.prepareStatement(command);
+            ps.setString(1,codigo);
+            if(ps.executeUpdate() > 0)
+                System.out.println("Eliminado");
+            else
+                System.out.println("Error");
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }
